@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19CCAA8E21AE82AC00CB6433 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CCAA8D21AE82AC00CB6433 /* BaseViewController.swift */; };
+		19CCAA9021AE870A00CB6433 /* DockingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CCAA8F21AE870A00CB6433 /* DockingView.swift */; };
+		19CCAA9221AE872000CB6433 /* DockingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19CCAA9121AE872000CB6433 /* DockingView.xib */; };
 		B6818B172095CCF300F18788 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B162095CCF300F18788 /* AppDelegate.swift */; };
 		B6818B192095CCF300F18788 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B182095CCF300F18788 /* ViewController.swift */; };
 		B6818B1C2095CCF300F18788 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6818B1A2095CCF300F18788 /* Main.storyboard */; };
@@ -14,6 +17,13 @@
 		B6818B212095CCF300F18788 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6818B1F2095CCF300F18788 /* LaunchScreen.storyboard */; };
 		B6818B2C2095CCF300F18788 /* DrawerVCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B2B2095CCF300F18788 /* DrawerVCTests.swift */; };
 		B6818B372095CCF300F18788 /* DrawerVCUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B362095CCF300F18788 /* DrawerVCUITests.swift */; };
+		B6818B452095CD1A00F18788 /* ToBePresentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B442095CD1A00F18788 /* ToBePresentedViewController.swift */; };
+		B6818B482095CE8E00F18788 /* DashboardTransitionAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B472095CE8E00F18788 /* DashboardTransitionAnimator.swift */; };
+		B6818B4A2095CF7400F18788 /* Interactor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6818B492095CF7400F18788 /* Interactor.swift */; };
+		B6E19548214C8F2F00004CF3 /* DockBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E19546214C8F2F00004CF3 /* DockBaseViewController.swift */; };
+		B6E19549214C8F2F00004CF3 /* DockBaseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6E19547214C8F2F00004CF3 /* DockBaseViewController.xib */; };
+		B6E1954C214C8F5B00004CF3 /* DockChildViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6E1954A214C8F5B00004CF3 /* DockChildViewController.swift */; };
+		B6E1954D214C8F5B00004CF3 /* DockChildViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B6E1954B214C8F5B00004CF3 /* DockChildViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +44,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		19CCAA8D21AE82AC00CB6433 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		19CCAA8F21AE870A00CB6433 /* DockingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockingView.swift; sourceTree = "<group>"; };
+		19CCAA9121AE872000CB6433 /* DockingView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockingView.xib; sourceTree = "<group>"; };
 		B6818B132095CCF300F18788 /* DrawerVC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrawerVC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6818B162095CCF300F18788 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B6818B182095CCF300F18788 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -47,6 +60,13 @@
 		B6818B322095CCF300F18788 /* DrawerVCUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DrawerVCUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6818B362095CCF300F18788 /* DrawerVCUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawerVCUITests.swift; sourceTree = "<group>"; };
 		B6818B382095CCF300F18788 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B6818B442095CD1A00F18788 /* ToBePresentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToBePresentedViewController.swift; sourceTree = "<group>"; };
+		B6818B472095CE8E00F18788 /* DashboardTransitionAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardTransitionAnimator.swift; sourceTree = "<group>"; };
+		B6818B492095CF7400F18788 /* Interactor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interactor.swift; sourceTree = "<group>"; };
+		B6E19546214C8F2F00004CF3 /* DockBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockBaseViewController.swift; sourceTree = "<group>"; };
+		B6E19547214C8F2F00004CF3 /* DockBaseViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockBaseViewController.xib; sourceTree = "<group>"; };
+		B6E1954A214C8F5B00004CF3 /* DockChildViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockChildViewController.swift; sourceTree = "<group>"; };
+		B6E1954B214C8F5B00004CF3 /* DockChildViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DockChildViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +94,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		19CCAA8C21AE826200CB6433 /* DockUsingView */ = {
+			isa = PBXGroup;
+			children = (
+				19CCAA8D21AE82AC00CB6433 /* BaseViewController.swift */,
+				19CCAA8F21AE870A00CB6433 /* DockingView.swift */,
+				19CCAA9121AE872000CB6433 /* DockingView.xib */,
+			);
+			path = DockUsingView;
+			sourceTree = "<group>";
+		};
 		B6818B0A2095CCF300F18788 = {
 			isa = PBXGroup;
 			children = (
@@ -97,8 +127,13 @@
 		B6818B152095CCF300F18788 /* DrawerVC */ = {
 			isa = PBXGroup;
 			children = (
+				19CCAA8C21AE826200CB6433 /* DockUsingView */,
+				B6E19545214C8F0D00004CF3 /* DockINgScene */,
 				B6818B162095CCF300F18788 /* AppDelegate.swift */,
 				B6818B182095CCF300F18788 /* ViewController.swift */,
+				B6818B472095CE8E00F18788 /* DashboardTransitionAnimator.swift */,
+				B6818B492095CF7400F18788 /* Interactor.swift */,
+				B6818B442095CD1A00F18788 /* ToBePresentedViewController.swift */,
 				B6818B1A2095CCF300F18788 /* Main.storyboard */,
 				B6818B1D2095CCF300F18788 /* Assets.xcassets */,
 				B6818B1F2095CCF300F18788 /* LaunchScreen.storyboard */,
@@ -123,6 +158,17 @@
 				B6818B382095CCF300F18788 /* Info.plist */,
 			);
 			path = DrawerVCUITests;
+			sourceTree = "<group>";
+		};
+		B6E19545214C8F0D00004CF3 /* DockINgScene */ = {
+			isa = PBXGroup;
+			children = (
+				B6E19546214C8F2F00004CF3 /* DockBaseViewController.swift */,
+				B6E19547214C8F2F00004CF3 /* DockBaseViewController.xib */,
+				B6E1954A214C8F5B00004CF3 /* DockChildViewController.swift */,
+				B6E1954B214C8F5B00004CF3 /* DockChildViewController.xib */,
+			);
+			path = DockINgScene;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -233,7 +279,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6818B212095CCF300F18788 /* LaunchScreen.storyboard in Resources */,
+				B6E1954D214C8F5B00004CF3 /* DockChildViewController.xib in Resources */,
 				B6818B1E2095CCF300F18788 /* Assets.xcassets in Resources */,
+				B6E19549214C8F2F00004CF3 /* DockBaseViewController.xib in Resources */,
+				19CCAA9221AE872000CB6433 /* DockingView.xib in Resources */,
 				B6818B1C2095CCF300F18788 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -259,8 +308,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6E19548214C8F2F00004CF3 /* DockBaseViewController.swift in Sources */,
 				B6818B192095CCF300F18788 /* ViewController.swift in Sources */,
 				B6818B172095CCF300F18788 /* AppDelegate.swift in Sources */,
+				B6E1954C214C8F5B00004CF3 /* DockChildViewController.swift in Sources */,
+				B6818B4A2095CF7400F18788 /* Interactor.swift in Sources */,
+				19CCAA9021AE870A00CB6433 /* DockingView.swift in Sources */,
+				19CCAA8E21AE82AC00CB6433 /* BaseViewController.swift in Sources */,
+				B6818B482095CE8E00F18788 /* DashboardTransitionAnimator.swift in Sources */,
+				B6818B452095CD1A00F18788 /* ToBePresentedViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
