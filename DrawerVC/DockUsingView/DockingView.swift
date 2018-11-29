@@ -9,6 +9,10 @@
 import UIKit
 
 class DockingView: UIView {
+    struct DeviceSpecific {
+        static let height = UIScreen.main.bounds.height
+        static let width = UIScreen.main.bounds.width
+    }
 
     /*
     // Only override draw() if you perform custom drawing.
@@ -19,6 +23,12 @@ class DockingView: UIView {
     */
     @IBOutlet weak var topView: UIView!
     var dockingViewState: DockingViewState = .dismissed
+    
+    class func initialize(_ frame: CGRect) -> DockingView {
+        let dView = Bundle.main.loadNibNamed("DockingView", owner: self, options: nil)?.first as! DockingView
+        dView.frame = frame
+        return dView
+    }
     
 }
 

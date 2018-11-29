@@ -16,8 +16,10 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        configureDockingView()
     }
     func configureDockingView() {
+        
         createPanGestureRecognizer(targetView: self.view)
     }
     
@@ -25,10 +27,21 @@ class BaseViewController: UIViewController {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture(panGesture:)))
         targetView.addGestureRecognizer(panGesture)
     }
+    @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
+        dockingView = DockingView.initialize(CGRect(x: 0, y: DockingView.DeviceSpecific.height, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height))
+        view.addSubview(dockingView!)
+        let newFrame = CGRect(x: 0, y: 0, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height)
+        UIView.animate(withDuration: 1, animations: {
+            self.dockingView?.frame = newFrame
+        }, completion: nil)
+    }
     
     @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
         // get translation
         let translation = panGesture.translation(in: view)
+        
+       
+        
         
         
         switch panGesture.state {

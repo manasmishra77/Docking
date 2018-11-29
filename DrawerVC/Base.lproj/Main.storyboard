@@ -94,10 +94,10 @@
             </objects>
             <point key="canvasLocation" x="901.60000000000002" y="126.38680659670166"/>
         </scene>
-        <!--View Controller-->
+        <!--Base View Controller-->
         <scene sceneID="YpW-Rx-ghW">
             <objects>
-                <viewController id="fZT-vf-7la" sceneMemberID="viewController">
+                <viewController id="fZT-vf-7la" customClass="BaseViewController" customModule="DrawerVC" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="g4e-MK-DCD">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -106,6 +106,9 @@
                                 <rect key="frame" x="100" y="239" width="53" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Present"/>
+                                <connections>
+                                    <action selector="dockingViewPresentButtonTapped:" destination="fZT-vf-7la" eventType="touchUpInside" id="OXJ-jY-zGq"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.98813956814177761" green="0.89515901128151754" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
