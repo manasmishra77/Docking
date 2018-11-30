@@ -16,11 +16,11 @@ class BaseViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        configureDockingView()
+        //configureDockingView()
     }
     func configureDockingView() {
-        
-        createPanGestureRecognizer(targetView: self.view)
+        guard let dockingView = dockingView else {return}
+        createPanGestureRecognizer(targetView: dockingView)
     }
     
     func createPanGestureRecognizer(targetView: UIView) {
@@ -30,6 +30,7 @@ class BaseViewController: UIViewController {
     @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
         dockingView = DockingView.initialize(CGRect(x: 0, y: DockingView.DeviceSpecific.height, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height))
         view.addSubview(dockingView!)
+        configureDockingView()
         let newFrame = CGRect(x: 0, y: 0, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height)
         UIView.animate(withDuration: 1, animations: {
             self.dockingView?.frame = newFrame
@@ -39,7 +40,19 @@ class BaseViewController: UIViewController {
     @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
         // get translation
         let translation = panGesture.translation(in: view)
+       // print(translation)
+        let panX = abs(translation.x)
+        let panY = abs(translation.y)
+        let widthMultiplier = 1 - panX/DockingView.DeviceSpecific.width
+        let heightMultiplier = 1 - panY/DockingView.DeviceSpecific.height
+        let newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
+        let newHeightOfDockingView = DockingView.DeviceSpecific.height*heightMultiplier
+
         
+        if let view = panGesture.view {
+            let newFrame = CGRect(x: translation.x, y: translation.y, width: newWidthOfDockingView, height: newHeightOfDockingView)
+            view.frame = newFrame
+        }
        
         
         
