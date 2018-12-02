@@ -28,6 +28,16 @@ class DockingView: UIView {
     var tvRatio: CGFloat!
     var thresholdHeightForTransitionWRTScreenHegiht: CGFloat!
     
+    class func initialize(_ frame: CGRect, topViewPropertion tVRatio: CGFloat = 16/9, dockedStateRatio: CGFloat = 2.5, thresholdHeight: CGFloat = 0.5) -> DockingView {
+        let dView = Bundle.main.loadNibNamed("DockingView", owner: self, options: nil)?.first as! DockingView
+        dView.frame = frame
+        dView.dockedStateWidthWRTDeviceWidth = dockedStateRatio
+        dView.topViewRatioConstarint.constant = tVRatio
+        dView.tvRatio = tVRatio
+        dView.thresholdHeightForTransitionWRTScreenHegiht = 0.5
+        return dView
+    }
+    
     var thresholdSize: CGSize {
         return CGSize(width: DeviceSpecific.width/thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height/thresholdHeightForTransitionWRTScreenHegiht)
     }
@@ -53,18 +63,37 @@ class DockingView: UIView {
         return CGSize.zero
     }
     
-    func <#name#>(<#parameters#>) -> <#return type#> {
-        <#function body#>
+    func frameOfDockingView(translation: CGPoint) -> CGRect {
+        let isDownward = translation.y > 0
+        print("Downward: ----- \(isDownward) ----- \(translation.y)")
+        let panX = abs(translation.x)
+        let panY = abs(translation.y)
+        switch dockingViewState {
+        case .expanded:
+            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
+            let newFrame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+            return newFrame
+        case .docked:
+            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
+            let dockX = DeviceSpecific.width - newSize.width - 10
+            let dockY = DeviceSpecific.height - newSize.height - 10
+            let newFrame = CGRect(x: dockX, y: dockY, width: newSize.width, height: newSize.height)
+            return newFrame
+        case .dismissed:
+            break
+        case .transition:
+            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
+            if isDownward {
+                
+            } else {
+            }
+            let newFrame = CGRect(x: translation.x, y: translation.y, width: newSize.width, height: newSize.height)
+            return newFrame
+        }
+        return CGRect.zero
     }
     
-    class func initialize(_ frame: CGRect, topViewPropertion tVRatio: CGFloat = 16/9, dockedStateRatio: CGFloat = 2.5, thresholdHeight: CGFloat = 0.5) -> DockingView {
-        let dView = Bundle.main.loadNibNamed("DockingView", owner: self, options: nil)?.first as! DockingView
-        dView.frame = frame
-        dView.dockedStateWidthWRTDeviceWidth = dockedStateRatio
-        dView.topViewRatioConstarint.constant = tVRatio
-        dView.thresholdHeightForTransitionWRTScreenHegiht = 0.5
-        return dView
-    }
+
     
 }
 
