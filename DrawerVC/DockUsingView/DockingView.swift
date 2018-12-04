@@ -43,6 +43,8 @@ class DockingView: UIView {
     }
     
     func sizeOfDockingView(panX: CGFloat, panY: CGFloat) -> CGSize {
+        //Panx Parameter is not used here. New width is according to height
+        let newPanX = DeviceSpecific.width*(panY/DeviceSpecific.height)
         switch dockingViewState {
         case .expanded:
             return CGSize(width: DeviceSpecific.width, height: DeviceSpecific.height)
@@ -53,10 +55,12 @@ class DockingView: UIView {
         case .dismissed:
             break
         case .transition:
-            let widthMultiplier = 1 - panX/DockingView.DeviceSpecific.width
+            let widthMultiplier = 1 - newPanX/DockingView.DeviceSpecific.width
             let heightMultiplier = 1 - panY/DockingView.DeviceSpecific.height
-            let newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
+            var newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
             let newHeightOfDockingView = DockingView.DeviceSpecific.height*heightMultiplier
+            let fixMinimumWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
+            newWidthOfDockingView = (newWidthOfDockingView<fixMinimumWidth) ? fixMinimumWidth : newWidthOfDockingView
             return CGSize(width: newWidthOfDockingView, height: newHeightOfDockingView)
             
         }
@@ -66,8 +70,8 @@ class DockingView: UIView {
     func frameOfDockingView(translation: CGPoint) -> CGRect {
         let isDownward = translation.y > 0
         print("Downward: ----- \(isDownward) ----- \(translation.y)")
-        let panX = abs(translation.x)
-        let panY = abs(translation.y)
+        let panX = abs(translation.x < 0 ? 0 : translation.x)
+        let panY = abs(translation.y < 0 ? 0 : translation.y)
         switch dockingViewState {
         case .expanded:
             let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
@@ -87,7 +91,9 @@ class DockingView: UIView {
                 
             } else {
             }
-            let newFrame = CGRect(x: translation.x, y: translation.y, width: newSize.width, height: newSize.height)
+            let newX = DeviceSpecific.width-newSize.width
+            let newY = DeviceSpecific.height-newSize.height
+            let newFrame = CGRect(x: newX, y: newY, width: newSize.width, height: newSize.height)
             return newFrame
         }
         return CGRect.zero

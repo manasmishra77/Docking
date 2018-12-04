@@ -38,10 +38,10 @@ class BaseViewController: UIViewController {
     }
     
     @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
-        guard let dView = dockingView as? DockingView else {return}
+        guard let dView = panGesture.view as? DockingView else {return}
         // get translation
         let translation = panGesture.translation(in: view)
-       // print(translation)
+        print(translation)
         let panX = abs(translation.x)
         let panY = abs(translation.y)
         
