@@ -42,13 +42,18 @@ class BaseViewController: UIViewController {
         // get translation
         let translation = panGesture.translation(in: view)
         print(translation)
-        let panX = abs(translation.x)
-        let panY = abs(translation.y)
         
+        var panX = abs(translation.x)
+        var panY = abs(translation.y)
+      
         switch panGesture.state {
         case .began:
             // add something you want to happen when the Label Panning has started
             print("In possible case")
+            if translation.y <= 0 {
+                dView.isDownward = false
+                return
+            }
         case .changed:
             // add something you want to happen when the Label Panning has been change ( during the moving/panning )
             print("In changed case")
@@ -65,6 +70,9 @@ class BaseViewController: UIViewController {
             }
             UIView.animate(withDuration: 0.3) {
                 dView.frame = dView.frameOfDockingView(translation: translation)
+            }
+            if !dView.isDownward {
+                dView.isDownward = true
             }
         default:
             print("In default case")
