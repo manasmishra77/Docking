@@ -40,7 +40,7 @@ class DockingView: UIView {
     }
     
     var thresholdSize: CGSize {
-        return CGSize(width: DeviceSpecific.width/thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height/thresholdHeightForTransitionWRTScreenHegiht)
+        return CGSize(width: DeviceSpecific.width*thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height*thresholdHeightForTransitionWRTScreenHegiht)
     }
     
     func sizeOfDockingView(panX: CGFloat, panY: CGFloat) -> CGSize {
@@ -71,7 +71,7 @@ class DockingView: UIView {
     func frameOfDockingView(translation: CGPoint) -> CGRect {
         
         let isDownward = translation.y > 0
-        print("Downward: ----- \(isDownward) ----- \(translation.y)")
+       // print("Downward: ----- \(isDownward) ----- \(translation.y)")
         
         var panX = translation.x
         var panY = translation.y
@@ -105,6 +105,7 @@ class DockingView: UIView {
             let newX = DeviceSpecific.width-newSize.width
             let newY = DeviceSpecific.height-newSize.height
             let newFrame = CGRect(x: newX, y: newY, width: newSize.width, height: newSize.height)
+            print("new size: -- \(newSize)")
             return newFrame
         }
         return CGRect.zero

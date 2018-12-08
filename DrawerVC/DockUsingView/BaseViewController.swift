@@ -68,8 +68,10 @@ class BaseViewController: UIViewController {
             } else {
                 dView.dockingViewState = .expanded
             }
+            let newFrame = dView.frameOfDockingView(translation: translation)
             UIView.animate(withDuration: 0.3) {
-                dView.frame = dView.frameOfDockingView(translation: translation)
+                dView.frame = newFrame
+                self.view.layoutIfNeeded()
             }
             if !dView.isDownward {
                 dView.isDownward = true
