@@ -9,7 +9,6 @@
 import UIKit
 
 class BaseViewController: UIViewController {
-    
     var dockingView: DockingView?
 
     override func viewDidLoad() {
@@ -26,6 +25,8 @@ class BaseViewController: UIViewController {
     func createPanGestureRecognizer(targetView: UIView) {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handlePanGesture(panGesture:)))
         targetView.addGestureRecognizer(panGesture)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(tapGesture:)))
+        targetView.addGestureRecognizer(tapGesture)
     }
     @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
         dockingView = DockingView.initialize(CGRect(x: 0, y: DockingView.DeviceSpecific.height, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height))
@@ -38,6 +39,10 @@ class BaseViewController: UIViewController {
     }
     
     @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
+        // Handling the case when docking view is in docked state and right swipped
+        guard !dismissDockingView(panGesture: panGesture) else {return}
+        
+        
         guard let dView = panGesture.view as? DockingView else {return}
         // get translation
         let translation = panGesture.translation(in: view)
@@ -79,6 +84,46 @@ class BaseViewController: UIViewController {
         default:
             print("In default case")
         }
+    }
+    @objc func handleTapGesture(tapGesture: UITapGestureRecognizer)  {
+        //HandleTap
+        guard let dView = tapGesture.view as? DockingView else {return}
+        if dView.dockingViewState == .docked {
+            let newFrame = CGRect(x: 0, y: 0, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height)
+            UIView.animate(withDuration: 0.5) {
+                dView.frame = newFrame
+                self.view.layoutIfNeeded()
+            }
+            UIView.animate(withDuration: 0.5, animations: {
+                dView.frame = newFrame
+                self.view.layoutIfNeeded()
+            }) { (_) in
+                dView.dockingViewState = .expanded
+            }
+        }
+    }
+    
+    func dismissDockingView(panGesture: UIPanGestureRecognizer) -> Bool {
+        guard let dView = panGesture.view as? DockingView else {return false}
+        guard dView.dockingViewState == .docked else {
+            return false
+        }
+        let velocity = panGesture.velocity(in: self.view)
+        guard velocity.x < 0, velocity.y <= 0 else {
+            return false
+        }
+        var newFrame = dView.frame
+        newFrame.origin.x = 0
+        UIView.animate(withDuration: 0.5, animations: {
+            dView.frame = newFrame
+            dView.alpha = 0
+            self.view.layoutIfNeeded()
+        }) { (_) in
+            dView.dockingViewState = .dismissed
+            self.dockingView?.removeFromSuperview()
+            self.dockingView = nil
+        }
+        return true
     }
 
 }

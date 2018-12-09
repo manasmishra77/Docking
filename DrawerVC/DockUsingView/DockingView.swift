@@ -39,6 +39,10 @@ class DockingView: UIView {
         return dView
     }
     
+    deinit {
+        print("deinit")
+    }
+    
     var thresholdSize: CGSize {
         return CGSize(width: DeviceSpecific.width*thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height*thresholdHeightForTransitionWRTScreenHegiht)
     }
