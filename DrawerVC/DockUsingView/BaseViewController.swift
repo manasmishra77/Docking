@@ -46,7 +46,7 @@ class BaseViewController: UIViewController {
         guard let dView = panGesture.view as? DockingView else {return}
         // get translation
         let translation = panGesture.translation(in: view)
-        print(translation)
+        //print(translation)
         
         var panX = abs(translation.x)
         var panY = abs(translation.y)
@@ -67,7 +67,11 @@ class BaseViewController: UIViewController {
         case .ended:
             // add something you want to happen when the Label Panning has ended
             print("In ended case")
-            let newSize = dView.sizeOfDockingView(panX: panX, panY: panY)
+            var newSize = dView.sizeOfDockingView(panX: panX, panY: panY)
+            if !dView.isDownward {
+                newSize = dView.sizeForUpwardMotion(transX: translation.x, transY: translation.y)
+            }
+            
             if ((newSize.width < dView.thresholdSize.width) && ((newSize.height < dView.thresholdSize.height))) {
                 dView.dockingViewState = .docked
             } else {
@@ -104,6 +108,7 @@ class BaseViewController: UIViewController {
     }
     
     func dismissDockingView(panGesture: UIPanGestureRecognizer) -> Bool {
+        return false
         guard let dView = panGesture.view as? DockingView else {return false}
         guard dView.dockingViewState == .docked else {
             return false

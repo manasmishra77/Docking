@@ -101,18 +101,45 @@ class DockingView: UIView {
         case .dismissed:
             break
         case .transition:
-            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
-            if isDownward {
-                
+            var newSize = self.sizeOfDockingView(panX: panX, panY: panY)
+            if !isDownward {
+                newSize = self.sizeForUpwardMotion(transX: translation.x, transY: translation.y)
             } else {
             }
             let newX = DeviceSpecific.width-newSize.width
             let newY = DeviceSpecific.height-newSize.height
             let newFrame = CGRect(x: newX, y: newY, width: newSize.width, height: newSize.height)
-            print("new size: -- \(newSize)")
+           // print("new size: -- \(newSize)")
             return newFrame
         }
         return CGRect.zero
+    }
+    
+    func sizeForUpwardMotion(transX: CGFloat, transY: CGFloat) -> CGSize {
+        //Panx Parameter is not used here. New width is according to height
+        let panY = transY <= 0 ? -transY: transY
+        print("transX -- \(transX) --- transY -- \(transY)")
+        let newPanX = DeviceSpecific.width*(panY/DeviceSpecific.height)
+        switch dockingViewState {
+        case .expanded:
+            return CGSize(width: DeviceSpecific.width, height: DeviceSpecific.height)
+        case .docked:
+            let newWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
+            let newHeight = newWidth*(1/tvRatio)
+            return CGSize(width: newWidth, height: newHeight)
+        case .dismissed:
+            break
+        case .transition:
+            let widthMultiplier = newPanX/DockingView.DeviceSpecific.width
+            let heightMultiplier = panY/DockingView.DeviceSpecific.height
+            var newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
+            let newHeightOfDockingView = DockingView.DeviceSpecific.height*heightMultiplier
+            let fixMinimumWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
+            newWidthOfDockingView = (newWidthOfDockingView<fixMinimumWidth) ? fixMinimumWidth : newWidthOfDockingView
+            return CGSize(width: newWidthOfDockingView, height: newHeightOfDockingView)
+            
+        }
+        return CGSize.zero
     }
     
 
