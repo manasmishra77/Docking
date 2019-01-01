@@ -18,8 +18,8 @@ class BaseViewController: UIViewController {
         //configureDockingView()
     }
     func configureDockingView() {
-        guard let dockingView = dockingView else {return}
-        createPanGestureRecognizer(targetView: dockingView)
+        //guard let dockingView = dockingView else {return}
+        //createPanGestureRecognizer(targetView: self.view)
     }
     
     func createPanGestureRecognizer(targetView: UIView) {
@@ -31,63 +31,95 @@ class BaseViewController: UIViewController {
     @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
         dockingView = DockingView.initialize(CGRect(x: 0, y: DockingView.DeviceSpecific.height, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height))
         view.addSubview(dockingView!)
-        configureDockingView()
+        //configureDockingView()
         let newFrame = CGRect(x: 0, y: 0, width: DockingView.DeviceSpecific.width, height: DockingView.DeviceSpecific.height)
         UIView.animate(withDuration: 1, animations: {
             self.dockingView?.frame = newFrame
         }, completion: nil)
     }
     
-    @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
-        // Handling the case when docking view is in docked state and right swipped
-        guard !dismissDockingView(panGesture: panGesture) else {return}
-        
-        
-        guard let dView = panGesture.view as? DockingView else {return}
-        // get translation
-        let translation = panGesture.translation(in: view)
-        //print(translation)
-        
-        var panX = abs(translation.x)
-        var panY = abs(translation.y)
-      
-        switch panGesture.state {
-        case .began:
-            // add something you want to happen when the Label Panning has started
-            print("In possible case")
-            if translation.y <= 0 {
-                dView.isDownward = false
-                return
-            }
-        case .changed:
-            // add something you want to happen when the Label Panning has been change ( during the moving/panning )
-            print("In changed case")
-            dView.dockingViewState = .transition
-            dView.frame = dView.frameOfDockingView(translation: translation)
-        case .ended:
-            // add something you want to happen when the Label Panning has ended
-            print("In ended case")
-            var newSize = dView.sizeOfDockingView(panX: panX, panY: panY)
-            if !dView.isDownward {
-                newSize = dView.sizeForUpwardMotion(transX: translation.x, transY: translation.y)
-            }
-            
-            if ((newSize.width < dView.thresholdSize.width) && ((newSize.height < dView.thresholdSize.height))) {
-                dView.dockingViewState = .docked
-            } else {
-                dView.dockingViewState = .expanded
-            }
-            let newFrame = dView.frameOfDockingView(translation: translation)
-            UIView.animate(withDuration: 0.3) {
-                dView.frame = newFrame
+    var initialPoint: CGPoint?
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+            dockingView?.viewIsTouched(touchingPoint: currentPoint, touchState: .began)
+           // print("lastPoint=== \(String(describing: lastPoint))")
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+             print("lastPoint=== \(String(describing: currentPoint))")
+
+            if let newFrame = dockingView?.viewIsTouched(touchingPoint: currentPoint, touchState: .transition) {
+                dockingView?.frame = newFrame
                 self.view.layoutIfNeeded()
             }
-            if !dView.isDownward {
-                dView.isDownward = true
-            }
-        default:
-            print("In default case")
         }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: self.view)
+            if let newFrame = dockingView?.viewIsTouched(touchingPoint: currentPoint, touchState: .end) {
+                dockingView?.frame = newFrame
+                self.view.layoutIfNeeded()
+            }
+        }
+    }
+    
+    @objc func handlePanGesture(panGesture: UIPanGestureRecognizer) {
+        // Handling the case when docking view is in docked state and right swipped
+        
+        //guard !dismissDockingView(panGesture: panGesture) else {return}
+        
+        
+        //guard let dView = panGesture.view as? DockingView else {return}
+        // get translation
+        //let translation = panGesture.translation(in: self.view)
+        //print(translation)
+        //print(panGesture.velocity(in: view))
+        return
+//        var panX = abs(translation.x)
+//        let panY = abs(translation.y)
+//
+//        switch panGesture.state {
+//        case .began:
+//            // add something you want to happen when the Label Panning has started
+//            print("In possible case")
+//            if translation.y <= 0 {
+//                dView.isDownward = false
+//                return
+//            }
+//        case .changed:
+//            // add something you want to happen when the Label Panning has been change ( during the moving/panning )
+//            print("In changed case")
+//            dView.dockingViewState = .transition
+//            dView.frame = dView.frameOfDockingView(translation: translation)
+//        case .ended:
+//            // add something you want to happen when the Label Panning has ended
+//            print("In ended case")
+//            var newSize = dView.sizeOfDockingView(panX: panX, panY: panY)
+//            if !dView.isDownward {
+//                newSize = dView.sizeForUpwardMotion(transX: translation.x, transY: translation.y)
+//            }
+//
+//            if ((newSize.width < dView.thresholdSize.width) && ((newSize.height < dView.thresholdSize.height))) {
+//                dView.dockingViewState = .docked
+//            } else {
+//                dView.dockingViewState = .expanded
+//            }
+//            let newFrame = dView.frameOfDockingView(translation: translation)
+//            UIView.animate(withDuration: 0.3) {
+//                dView.frame = newFrame
+//                self.view.layoutIfNeeded()
+//            }
+//            if !dView.isDownward {
+//                dView.isDownward = true
+//            }
+//        default:
+//            print("In default case")
+//        }
     }
     @objc func handleTapGesture(tapGesture: UITapGestureRecognizer)  {
         //HandleTap
@@ -130,5 +162,4 @@ class BaseViewController: UIViewController {
         }
         return true
     }
-
 }

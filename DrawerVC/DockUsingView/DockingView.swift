@@ -12,22 +12,34 @@ class DockingView: UIView {
     struct DeviceSpecific {
         static let height = UIScreen.main.bounds.height
         static let width = UIScreen.main.bounds.width
+        static let panLength: CGFloat = 250
     }
 
     @IBOutlet weak var topViewRatioConstarint: NSLayoutConstraint!
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
     @IBOutlet weak var topView: UIView!
+    
+    //minimumWidth = dockedStateWidthWRTDeviceWidth*DeviceWidth
     var dockedStateWidthWRTDeviceWidth: CGFloat!
+    
+    //State of the view
     var dockingViewState: DockingViewState = .dismissed
+    
+    //topViewHeight = tvRatio*Dockingview.height
     var tvRatio: CGFloat!
+    
+    //Actual threSholdHeight = thresholdHeightForTransitionWRTScreenHegiht*DeviceHeight
     var thresholdHeightForTransitionWRTScreenHegiht: CGFloat!
-    var isDownward: Bool = true
+    
+    var dockedStatesize: CGSize {
+        let width = DeviceSpecific.width*dockedStateWidthWRTDeviceWidth
+        let height = width*tvRatio
+        return CGSize(width: width, height: height)
+    }
+    
+    var thresholdSize: CGSize {
+        return CGSize(width: DeviceSpecific.width*thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height*thresholdHeightForTransitionWRTScreenHegiht)
+    }
+
     
     class func initialize(_ frame: CGRect, topViewPropertion tVRatio: CGFloat = 16/9, dockedStateRatio: CGFloat = 2.5, thresholdHeight: CGFloat = 0.5) -> DockingView {
         let dView = Bundle.main.loadNibNamed("DockingView", owner: self, options: nil)?.first as! DockingView
@@ -43,112 +55,73 @@ class DockingView: UIView {
         print("deinit")
     }
     
-    var thresholdSize: CGSize {
-        return CGSize(width: DeviceSpecific.width*thresholdHeightForTransitionWRTScreenHegiht, height: DeviceSpecific.height*thresholdHeightForTransitionWRTScreenHegiht)
-    }
+    var touchStartingPoint: CGPoint?
     
-    func sizeOfDockingView(panX: CGFloat, panY: CGFloat) -> CGSize {
-        //Panx Parameter is not used here. New width is according to height
-        let newPanX = DeviceSpecific.width*(panY/DeviceSpecific.height)
-        switch dockingViewState {
-        case .expanded:
-            return CGSize(width: DeviceSpecific.width, height: DeviceSpecific.height)
-        case .docked:
-            let newWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
-            let newHeight = newWidth*(1/tvRatio)
-            return CGSize(width: newWidth, height: newHeight)
-        case .dismissed:
-            break
-        case .transition:
-            let widthMultiplier = 1 - newPanX/DockingView.DeviceSpecific.width
-            let heightMultiplier = 1 - panY/DockingView.DeviceSpecific.height
-            var newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
-            let newHeightOfDockingView = DockingView.DeviceSpecific.height*heightMultiplier
-            let fixMinimumWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
-            newWidthOfDockingView = (newWidthOfDockingView<fixMinimumWidth) ? fixMinimumWidth : newWidthOfDockingView
-            return CGSize(width: newWidthOfDockingView, height: newHeightOfDockingView)
-            
-        }
-        return CGSize.zero
-    }
-    
-    func frameOfDockingView(translation: CGPoint) -> CGRect {
-        
-        let isDownward = translation.y > 0
-       // print("Downward: ----- \(isDownward) ----- \(translation.y)")
-        
-        var panX = translation.x
-        var panY = translation.y
-        if !isDownward {
-            panX = DockingView.DeviceSpecific.width + panX
-            panY = DockingView.DeviceSpecific.height + panY
-        } else {
-            panX = abs(translation.x < 0 ? 0 : translation.x)
-            panY = abs(translation.y < 0 ? 0 : translation.y)
-        }
-       
-        switch dockingViewState {
-        case .expanded:
-            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
-            let newFrame = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-            return newFrame
-        case .docked:
-            let newSize = self.sizeOfDockingView(panX: panX, panY: panY)
-            let dockX = DeviceSpecific.width - newSize.width - 10
-            let dockY = DeviceSpecific.height - newSize.height - 10
-            let newFrame = CGRect(x: dockX, y: dockY, width: newSize.width, height: newSize.height)
-            return newFrame
-        case .dismissed:
-            break
-        case .transition:
-            var newSize = self.sizeOfDockingView(panX: panX, panY: panY)
-            if !isDownward {
-                newSize = self.sizeForUpwardMotion(transX: translation.x, transY: translation.y)
-            } else {
+    func viewIsTouched(touchingPoint: CGPoint, touchState: TouchState) -> CGRect? {
+        if touchState == .began {
+            touchStartingPoint = touchingPoint
+        } else if touchState == .transition {
+            switch dockingViewState {
+            case .transitionDownWard, .transitionUpWard:
+                return getFrameOfTheDockingView(touchingPoint: touchingPoint, viewState: dockingViewState)
+            default:
+                if ((touchStartingPoint?.y ?? 0) > touchingPoint.y) {
+                    dockingViewState = .transitionUpWard
+                } else if ((touchStartingPoint?.y ?? 0) < touchingPoint.y) {
+                    dockingViewState = .transitionDownWard
+                }
             }
-            let newX = DeviceSpecific.width-newSize.width
-            let newY = DeviceSpecific.height-newSize.height
-            let newFrame = CGRect(x: newX, y: newY, width: newSize.width, height: newSize.height)
-           // print("new size: -- \(newSize)")
-            return newFrame
-        }
-        return CGRect.zero
-    }
-    
-    func sizeForUpwardMotion(transX: CGFloat, transY: CGFloat) -> CGSize {
-        //Panx Parameter is not used here. New width is according to height
-        let panY = transY <= 0 ? -transY: transY
-        print("transX -- \(transX) --- transY -- \(transY)")
-        let newPanX = DeviceSpecific.width*(panY/DeviceSpecific.height)
-        switch dockingViewState {
-        case .expanded:
-            return CGSize(width: DeviceSpecific.width, height: DeviceSpecific.height)
-        case .docked:
-            let newWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
-            let newHeight = newWidth*(1/tvRatio)
-            return CGSize(width: newWidth, height: newHeight)
-        case .dismissed:
-            break
-        case .transition:
-            let widthMultiplier = newPanX/DockingView.DeviceSpecific.width
-            let heightMultiplier = panY/DockingView.DeviceSpecific.height
-            var newWidthOfDockingView = DockingView.DeviceSpecific.width*widthMultiplier
-            let newHeightOfDockingView = DockingView.DeviceSpecific.height*heightMultiplier
-            let fixMinimumWidth = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
-            newWidthOfDockingView = (newWidthOfDockingView<fixMinimumWidth) ? fixMinimumWidth : newWidthOfDockingView
-            return CGSize(width: newWidthOfDockingView, height: newHeightOfDockingView)
-            
-        }
-        return CGSize.zero
-    }
-    
 
-    
+        } else if touchState == .end {
+            let endFrame = getFrameOfTheDockingView(touchingPoint: touchingPoint, viewState: self.dockingViewState)
+            touchStartingPoint = nil
+            if endFrame.size.height == dockedStatesize.height {
+                dockingViewState = .docked
+            } else {
+                dockingViewState = .expanded
+            }
+            return endFrame
+        }
+        return nil
+    }
 }
+
+//Helper functions
+extension DockingView {
+    func getFrameOfTheDockingView(touchingPoint: CGPoint, viewState: DockingViewState) -> CGRect {
+        var dC = touchingPoint.y - (touchStartingPoint?.y ?? 0)
+        dC = (dC>(DeviceSpecific.panLength-1)) ? (DeviceSpecific.panLength-1) : dC
+        var currentHeight = ((DeviceSpecific.height - dockedStatesize.height)*(DeviceSpecific.panLength-dC)/DeviceSpecific.panLength) + dockedStatesize.height
+        if currentHeight > DeviceSpecific.height {
+            currentHeight = DeviceSpecific.height
+        } else if currentHeight < dockedStatesize.height {
+            currentHeight = dockedStatesize.height
+        }
+        var currentWidth = ((DeviceSpecific.height - dockedStatesize.width)*(DeviceSpecific.panLength-dC)/DeviceSpecific.panLength) + dockedStatesize.width
+        if currentWidth > DeviceSpecific.width {
+            currentWidth = DeviceSpecific.width
+        } else if currentWidth < dockedStatesize.width {
+            currentWidth = dockedStatesize.width
+        }
+        
+        let currentY = DockingView.DeviceSpecific.height-currentHeight
+        let currentX = DockingView.DeviceSpecific.width-currentWidth
+        let newFrame = CGRect(x: currentX, y: currentY, width: currentWidth, height: currentHeight)
+        return newFrame
+    }
+}
+
 
 enum DockingViewState {
     case expanded
     case docked
     case dismissed
+    case transitionUpWard
+    case transitionDownWard
+}
+
+enum TouchState {
+    case began
     case transition
+    case end
 }
