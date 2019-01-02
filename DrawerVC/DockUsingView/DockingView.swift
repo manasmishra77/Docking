@@ -18,7 +18,7 @@ class DockingView: UIView {
     @IBOutlet weak var topViewRatioConstarint: NSLayoutConstraint!
     @IBOutlet weak var topView: UIView!
     
-    //minimumWidth = dockedStateWidthWRTDeviceWidth*DeviceWidth
+    //minimumWidth = DeviceWidth/dockedStateWidthWRTDeviceWidth
     var dockedStateWidthWRTDeviceWidth: CGFloat!
     
     //State of the view
@@ -31,7 +31,7 @@ class DockingView: UIView {
     var thresholdHeightForTransitionWRTScreenHegiht: CGFloat!
     
     var dockedStatesize: CGSize {
-        let width = DeviceSpecific.width*dockedStateWidthWRTDeviceWidth
+        let width = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
         let height = width*tvRatio
         return CGSize(width: width, height: height)
     }
@@ -103,7 +103,6 @@ extension DockingView {
         } else if currentWidth < dockedStatesize.width {
             currentWidth = dockedStatesize.width
         }
-        
         let currentY = DockingView.DeviceSpecific.height-currentHeight
         let currentX = DockingView.DeviceSpecific.width-currentWidth
         let newFrame = CGRect(x: currentX, y: currentY, width: currentWidth, height: currentHeight)
