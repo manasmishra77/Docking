@@ -62,8 +62,10 @@ class BaseViewController: UIViewController {
         if let touch = touches.first {
             let currentPoint = touch.location(in: self.view)
             if let newFrame = dockingView?.viewIsTouched(touchingPoint: currentPoint, touchState: .end) {
-                dockingView?.frame = newFrame
-                self.view.layoutIfNeeded()
+                UIView.animate(withDuration: 0.3) {
+                    self.dockingView?.frame = newFrame
+                    self.view.layoutIfNeeded()
+                }
             }
         }
     }
