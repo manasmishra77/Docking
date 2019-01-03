@@ -27,14 +27,14 @@ class DockingView: UIView {
     var dockingViewState: DockingViewState = .expanded
     
     //topViewHeight = Dockingview.height/tvRatio
-    var tvRatio: CGFloat!
+    var topViewRatio: CGFloat!
     
     //Actual threSholdHeight = thresholdHeightForTransitionWRTScreenHegiht*DeviceHeight
     var thresholdHeightForTransitionWRTScreenHegiht: CGFloat!
     
     var dockedStatesize: CGSize {
         let width = DeviceSpecific.width/dockedStateWidthWRTDeviceWidth
-        let height = width/tvRatio
+        let height = width/topViewRatio
         return CGSize(width: width, height: height)
     }
     
@@ -43,18 +43,29 @@ class DockingView: UIView {
     }
 
     
-    class func initialize(_ frame: CGRect, topViewPropertion tVRatio: CGFloat = 16/9, dockedStateRatio: CGFloat = 2.5, thresholdHeight: CGFloat = 0.5) -> DockingView {
+    class func initialize(_ superview: UIView, topViewPropertion tVRatio: CGFloat = 16/9, dockedStateRatio: CGFloat = 2.5, thresholdHeight: CGFloat = 0.5) -> DockingView {
         let dView = Bundle.main.loadNibNamed("DockingView", owner: self, options: nil)?.first as! DockingView
-        dView.frame = frame
+        dView.frame = CGRect(x: 0, y: DeviceSpecific.height, width: DockingView.DeviceSpecific.width, height: DeviceSpecific.height)
         dView.dockedStateWidthWRTDeviceWidth = dockedStateRatio
         dView.topViewRatioConstarint.constant = tVRatio
-        dView.tvRatio = tVRatio
+        dView.topViewRatio = tVRatio
         dView.thresholdHeightForTransitionWRTScreenHegiht = 0.5
+        dView.addGestureRecognizer()
+        dView.addSwipeGestureRecognizer()
+        superview.addSubview(dView)
         return dView
     }
     
     deinit {
         print("deinit")
+    }
+    
+    func present(animation: Bool = true) {
+        let animationTime = animation ? 0.5 : 0
+        guard let newFrame = self.superview?.frame else {return}
+        UIView.animate(withDuration: animationTime, animations: {
+            self.frame = newFrame
+        }, completion: nil)
     }
     
     var touchStartingPoint: CGPoint?
@@ -109,8 +120,8 @@ extension DockingView {
                 newFrame = CGRect(x: 0, y: 0, width: DeviceSpecific.width, height: DeviceSpecific.height)
                 self.dockingViewState = .expanded
             } else if viewState == .transitionUpWard || (viewState == .docked) {
-                let dockedY = DockingView.DeviceSpecific.height-dockedStatesize.height
-                let dockedX = DockingView.DeviceSpecific.width-dockedStatesize.width
+                let dockedY = DockingView.DeviceSpecific.height-dockedStatesize.height-DeviceSpecific.dockedStateClearanceFromBottm
+                let dockedX = DockingView.DeviceSpecific.width-dockedStatesize.width-DeviceSpecific.dockedStateClearanceFromTrail
                 newFrame = CGRect(x: dockedX, y: dockedY, width: dockedStatesize.width, height: dockedStatesize.height)
                 self.dockingViewState = .docked
             }
@@ -120,8 +131,8 @@ extension DockingView {
                     newFrame = CGRect(x: 0, y: 0, width: DeviceSpecific.width, height: DeviceSpecific.height)
                     self.dockingViewState = .expanded
                 } else {
-                    let dockedY = DockingView.DeviceSpecific.height-dockedStatesize.height
-                    let dockedX = DockingView.DeviceSpecific.width-dockedStatesize.width
+                    let dockedY = DockingView.DeviceSpecific.height-dockedStatesize.height-DeviceSpecific.dockedStateClearanceFromBottm
+                    let dockedX = DockingView.DeviceSpecific.width-dockedStatesize.width-DeviceSpecific.dockedStateClearanceFromTrail
                     newFrame = CGRect(x: dockedX, y: dockedY, width: dockedStatesize.width, height: dockedStatesize.height)
                     self.dockingViewState = .docked
                 }
@@ -130,8 +141,8 @@ extension DockingView {
                     newFrame = CGRect(x: 0, y: 0, width: DeviceSpecific.width, height: DeviceSpecific.height)
                     self.dockingViewState = .expanded
                 } else {
-                    let dockedY = DockingView.DeviceSpecific.height-thresholdSize.height
-                    let dockedX = DockingView.DeviceSpecific.width-thresholdSize.width
+                    let dockedY = DockingView.DeviceSpecific.height-dockedStatesize.height-DeviceSpecific.dockedStateClearanceFromBottm
+                    let dockedX = DockingView.DeviceSpecific.width-dockedStatesize.width-DeviceSpecific.dockedStateClearanceFromTrail
                     newFrame = CGRect(x: dockedX, y: dockedY, width: DeviceSpecific.width, height: DeviceSpecific.height)
                     self.dockingViewState = .docked
                 }
@@ -157,8 +168,16 @@ extension DockingView {
         } else if currentWidth < dockedStatesize.width {
             currentWidth = dockedStatesize.width
         }
-        let currentY = DockingView.DeviceSpecific.height-currentHeight
-        let currentX = DockingView.DeviceSpecific.width-currentWidth
+        var currentY = DockingView.DeviceSpecific.height-currentHeight
+        if currentY + dockedStatesize.height + DeviceSpecific.dockedStateClearanceFromBottm > DeviceSpecific.height {
+            currentY = DeviceSpecific.height - dockedStatesize.height - DeviceSpecific.dockedStateClearanceFromBottm
+        }
+        
+        var currentX = DockingView.DeviceSpecific.width-currentWidth
+        if currentX + dockedStatesize.width + DeviceSpecific.dockedStateClearanceFromTrail > DeviceSpecific.width {
+            currentX = DeviceSpecific.width - dockedStatesize.width - DeviceSpecific.dockedStateClearanceFromTrail
+        }
+        
         let newFrame = CGRect(x: currentX, y: currentY, width: currentWidth, height: currentHeight)
         return newFrame
     }
@@ -177,4 +196,83 @@ enum TouchState {
     case began
     case transition
     case end
+}
+
+
+// Touch Related methods
+extension DockingView {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let superview = self.superview else {return}
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: superview)
+            self.viewIsTouched(touchingPoint: currentPoint, touchState: .began)
+            // print("lastPoint=== \(String(describing: lastPoint))")
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let superview = self.superview else {return}
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: superview)
+            //print("lastPoint=== \(String(describing: currentPoint))")
+            
+            if let newFrame = self.viewIsTouched(touchingPoint: currentPoint, touchState: .transition) {
+                self.frame = newFrame
+                superview.layoutIfNeeded()
+            }
+        }
+    }
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let superview = self.superview else {return}
+        if let touch = touches.first {
+            let currentPoint = touch.location(in: superview)
+            if let newFrame = self.viewIsTouched(touchingPoint: currentPoint, touchState: .end) {
+                UIView.animate(withDuration: 0.3) {
+                    self.frame = newFrame
+                    superview.layoutIfNeeded()
+                }
+            }
+        }
+    }
+}
+
+//Tap Gesture related methods
+extension DockingView {
+    func addGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleTapGesture(tapGesture:)))
+        self.addGestureRecognizer(tapGesture)
+    }
+    @objc func handleTapGesture(tapGesture: UITapGestureRecognizer)  {
+        //HandleTap
+        guard (tapGesture.view as? DockingView) != nil else {return}
+        if dockingViewState == .docked {
+            present()
+            dockingViewState = .expanded
+        }
+    }
+}
+
+//Swipe Gesture related methods
+extension DockingView {
+    func addSwipeGestureRecognizer() {
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(self.handleSwipeGesture(swipeGesture:)))
+        swipeGesture.direction = .left
+        self.addGestureRecognizer(swipeGesture)
+    }
+    @objc func handleSwipeGesture(swipeGesture: UISwipeGestureRecognizer)  {
+        //HandleTap
+        guard (swipeGesture.view as? DockingView) != nil else {return}
+        if dockingViewState == .docked, swipeGesture.direction == .left {
+            var newFrame = self.frame
+            newFrame.origin.x = 0
+            UIView.animate(withDuration: 0.5, animations: {
+                self.frame = newFrame
+                self.alpha = 0
+                self.superview?.layoutIfNeeded()
+            }) { (_) in
+                self.dockingViewState = .dismissed
+                self.superview?.removeFromSuperview()
+            }
+        }
+    }
 }
