@@ -18,8 +18,11 @@ class BaseViewController: UIViewController {
     }
    
     @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
-        dockingView = DockingView.initialize(self.view)
+        dockingView = CustomDockingView.initialize(self.view)
         dockingView?.present()
     }
         
+}
+
+class CustomDockingView: DockingView {
 }
