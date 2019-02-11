@@ -14,6 +14,7 @@ enum DockingViewState {
     case dismissed
     case transitionUpWard
     case transitionDownWard
+    case transitionLeftSide
 }
 
 class DockingView: UIView {
@@ -110,6 +111,7 @@ class DockingView: UIView {
     
     
     //Overidable methods and variables
+    //Used to transition up nd down
     var panLength: CGFloat {
         if (dockingViewState == .expanded || dockingViewState == .transitionDownWard), let initialPoint = touchStartingPoint {
             let newPanLength = dockedStateFrame.origin.y - initialPoint.y
@@ -121,6 +123,19 @@ class DockingView: UIView {
     var minimumPanLengthToStartPanning: CGFloat {
         return 0.1*panLength
     }
+    
+    //Used as panlength to dismis while swipping left in docked state
+    var panLengthForLeftSwipeDismiss: CGFloat {
+        if let initialPoint = touchStartingPoint {
+            return initialPoint.x - 50
+        }
+        return DeviceSpecific.width - 100
+    }
+    var minimumPanLengthToStartPanningToDismiss: CGFloat {
+        return 0.1*panLengthForLeftSwipeDismiss
+    }
+    
+
     
     var isDockingAllowed: Bool = true
     
@@ -408,6 +423,9 @@ private extension DockingView {
                     return nil
                 }
                 
+            case .transitionLeftSide:
+                getFrameOfDockingViewForLeftSwipeDismiss(touchingPoint: touchingPoint, viewState: dockingViewState)
+
             default:
                 if dockingViewState == .docked {
                     if (touchStartingPoint?.y ?? 0) - touchingPoint.y > minimumPanLengthToStartPanning {
@@ -417,7 +435,15 @@ private extension DockingView {
                             dockingViewState = .transitionUpWard
                             self.viewWillStartTransition(currentState: currentState, toState: dockingViewState)
                         }
+                    } else if (touchStartingPoint?.x ?? 0) - touchingPoint.x > minimumPanLengthToStartPanningToDismiss, touchingPoint.y > touchStartingPoint?.y ?? 0 {
+                        if !isTransitionPannigStarted {
+                            isTransitionPannigStarted = true
+                            let currentState = dockingViewState
+                            dockingViewState = .transitionLeftSide
+                            self.viewWillStartTransition(currentState: currentState, toState: dockingViewState)
+                        }
                     }
+
                 } else if dockingViewState == .expanded {
                     if touchingPoint.y - (touchStartingPoint?.y ?? 0) > minimumPanLengthToStartPanning {
                         if !isTransitionPannigStarted {
@@ -438,7 +464,13 @@ private extension DockingView {
             guard isTransitionPannigStarted else {return nil}
             isTransitionPannigStarted = false
             let endFrame = getFrameOfTheDockingView(touchingPoint: touchingPoint, viewState: self.dockingViewState)
-            let newFrame =  gettingFinalFrameForTouchEnd(endFrame, viewState: self.dockingViewState, endPoint: touchingPoint)
+            var newFrame = endFrame
+            if dockingViewState == .transitionLeftSide {
+                newFrame = gettingFinalFrameInTouchEndForLeftSwipeToDismiss(endFrame, viewState: self.dockingViewState, endPoint: touchingPoint)
+            } else {
+                newFrame =  gettingFinalFrameForTouchEnd(endFrame, viewState: self.dockingViewState, endPoint: touchingPoint)
+            }
+
             touchStartingPoint = nil
             touchStartingTime = nil
             return newFrame
@@ -557,8 +589,8 @@ private extension DockingView {
     func addSwipeGestureRecognizer() {
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(self.handleSwipeGesture(swipeGesture:)))
         swipeGesture.direction = .left
-        self.addGestureRecognizer(swipeGesture)
-        self.swipeGesture = swipeGesture
+        //self.addGestureRecognizer(swipeGesture)
+        //self.swipeGesture = swipeGesture
     }
     @objc func handleSwipeGesture(swipeGesture: UISwipeGestureRecognizer) {
         //HandleTap
@@ -579,6 +611,46 @@ private extension DockingView {
             }
         }
     }
+}
+
+//Swipe to dismiss related methods
+private extension DockingView {
+    func getFrameOfDockingViewForLeftSwipeDismiss(touchingPoint: CGPoint, viewState: DockingViewState) -> CGRect {
+        var dC = (touchStartingPoint?.x ?? 0) - touchingPoint.x
+        var scale = (panLengthForLeftSwipeDismiss-dC)/panLengthForLeftSwipeDismiss
+        if scale < 0 {
+            scale = 0
+        } else if scale > 1 {
+            scale = 1
+        }
+        let currentX = (dockedStateOrigin.x + dockedStatesize.width)*scale
+        var newFrame = dockedStateFrame
+        newFrame.origin.x = currentX
+        self.referenceView?.alpha = scale
+        return newFrame
+    }
+    
+    func gettingFinalFrameInTouchEndForLeftSwipeToDismiss(_ endFrame: CGRect, viewState: DockingViewState, endPoint: CGPoint) -> CGRect {
+        let dC = (touchStartingPoint?.x ?? 0) - endPoint.x
+        var newFrame = CGRect.zero
+        //Used for getting the frame according to the speed
+        if getSpeedOfPanning(distanceCovered: dC) > DeviceSpecific.thresholdSpeed {
+            newFrame = dockedStateFrame
+            newFrame.origin.x = -dockedStatesize.width
+            self.dockingViewState = .dismissed
+        } else {
+            //Used for getting the frame according to the panning length
+            if endFrame.origin.x > DeviceSpecific.width/3 {
+                newFrame = getFrameForState(.docked)
+            } else {
+                newFrame = getFrameForState(.docked)
+                newFrame.origin.x = -dockedStatesize.width
+                self.dockingViewState = .dismissed
+            }
+        }
+        return newFrame
+    }
+
 }
 
 extension NSLayoutConstraint {
