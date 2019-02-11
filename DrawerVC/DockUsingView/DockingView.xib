@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -13,42 +13,47 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DockingView" customModule="DrawerVC" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wN6-9P-vAr">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="225"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="211"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wheel4" translatesAutoresizingMaskIntoConstraints="NO" id="cZa-yN-XVR">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="225"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="cZa-yN-XVR">
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="211"/>
                         </imageView>
                     </subviews>
                     <color key="backgroundColor" red="0.81111656369551643" green="1" blue="0.95434959235832351" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <constraints>
                         <constraint firstItem="cZa-yN-XVR" firstAttribute="leading" secondItem="wN6-9P-vAr" secondAttribute="leading" id="1n7-hc-oMe"/>
                         <constraint firstAttribute="trailing" secondItem="cZa-yN-XVR" secondAttribute="trailing" id="3dm-37-6HS"/>
-                        <constraint firstAttribute="width" secondItem="wN6-9P-vAr" secondAttribute="height" multiplier="5:3" id="HiL-ea-hgM"/>
+                        <constraint firstAttribute="width" secondItem="wN6-9P-vAr" secondAttribute="height" multiplier="16:9" placeholder="YES" id="CuC-sG-zdA"/>
                         <constraint firstItem="cZa-yN-XVR" firstAttribute="top" secondItem="wN6-9P-vAr" secondAttribute="top" id="LZt-xg-WOZ"/>
                         <constraint firstAttribute="bottom" secondItem="cZa-yN-XVR" secondAttribute="bottom" id="VvZ-Zz-OeX"/>
                     </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jlz-Lx-kIk" userLabel="Central View">
+                    <rect key="frame" x="0.0" y="211" width="375" height="602"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="0.97109503474447867" blue="0.74467654432086783" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
             <gestureRecognizers/>
             <constraints>
+                <constraint firstItem="jlz-Lx-kIk" firstAttribute="top" secondItem="wN6-9P-vAr" secondAttribute="bottom" id="2l2-dX-KIt"/>
                 <constraint firstItem="wN6-9P-vAr" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="8of-81-j8X"/>
+                <constraint firstItem="jlz-Lx-kIk" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" constant="35" id="IIy-ZQ-bqQ"/>
+                <constraint firstItem="jlz-Lx-kIk" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Q0N-dg-RGa"/>
                 <constraint firstItem="wN6-9P-vAr" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="cST-e8-GM8"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="jlz-Lx-kIk" secondAttribute="trailing" id="f9l-Xg-wdM"/>
                 <constraint firstItem="wN6-9P-vAr" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="jVU-Wp-gJi"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
+                <outlet property="centralView" destination="jlz-Lx-kIk" id="Yca-d4-sBa"/>
                 <outlet property="topView" destination="wN6-9P-vAr" id="aft-m7-vbG"/>
-                <outlet property="topViewRatioConstarint" destination="HiL-ea-hgM" id="v8s-Zu-9ul"/>
             </connections>
             <point key="canvasLocation" x="-244" y="116.49175412293854"/>
         </view>
     </objects>
-    <resources>
-        <image name="wheel4" width="468" height="468"/>
-    </resources>
 </document>

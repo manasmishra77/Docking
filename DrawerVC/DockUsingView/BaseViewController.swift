@@ -18,11 +18,18 @@ class BaseViewController: UIViewController {
     }
    
     @IBAction func dockingViewPresentButtonTapped(_ sender: Any) {
-        dockingView = CustomDockingView.initialize(self.view)
+        let container = UIView()
+        container.frame = self.view.bounds
+        self.view.addSubview(container)
+        dockingView = DockingView.initialize(container, referenceView: self.view, type: DockingView.self)
+        dockingView?.layoutIfNeeded()
         dockingView?.present()
     }
         
 }
 
 class CustomDockingView: DockingView {
+    override func dockingViewRatioChangeInTransition(_ scale: CGFloat) {
+        
+    }
 }
